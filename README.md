@@ -2,7 +2,6 @@
 
 ![image](https://github.com/harindujayakody/fetches-all-links/assets/9878813/71f881e8-2f51-4e9a-9451-e4086a78562c)
 
-```markdown
 # Web Link Scraper
 
 Web Link Scraper is a Python script that allows you to fetch all links from a given webpage and save them to a text file, grouped by domain. The script also includes a Dracula theme for the terminal interface, a hero section with credits for the author, and options to retry or close the program.
