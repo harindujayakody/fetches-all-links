@@ -12,6 +12,18 @@ A modern, high-performance Python script that scrapes all links from any webpage
 
 ---
 
+## 📸 Interface Screenshots
+
+<p align="center">
+  <img src="Screenshot1.png" alt="Terminal Prompt UI" width="800" />
+  <br/><br/>
+  <img src="Screenshot2.png" alt="Link Scraping Output Tree" width="800" />
+  <br/><br/>
+  <img src="Screenshot3.png" alt="Folder Grouping & Execution Summary" width="800" />
+</p>
+
+---
+
 ## 🌟 Key Features
 
 - 📁 **Folder Grouping per Site**: Creates a dedicated folder for each target URL scraped (e.g. `output/cocobee.lk/`).
