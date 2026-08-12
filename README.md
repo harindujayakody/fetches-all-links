@@ -31,12 +31,12 @@ A modern, high-performance Python script that scrapes all links from any webpage
   - `all_links.txt`: Combined file with all scraped links categorized by domain.
   - `<domain>.txt`: Individual `.txt` files containing clean raw links for each domain (e.g. `facebook.com.txt`, `cocobee.lk.txt`).
 - 🔗 **Clean Link Formatting**: No `(1)`, `(2)` prefixes before links in output files.
+- ⚡ **Auto-Start & Dependency Launcher (`run.bat`)**: Single-click batch launcher that checks Python & missing dependencies automatically.
 - 🎨 **Dark Modern Terminal UI**:
   - Sleek dark theme layout using `rich`.
   - Minimalist prompt (`› Enter URL to scrape`).
   - Live progress spinner.
   - Execution summary cards with time and link metrics.
-- ⚡ **Auto-Dependency Management**: Automatically checks and installs any missing Python packages on startup without crashing.
 - 🧹 **Terminal Auto-Cleaning**: Automatically clears terminal logs on launch and before each new scraping session.
 
 ---
@@ -76,9 +76,15 @@ git clone https://github.com/harindujayakody/fetches-all-links.git
 cd fetches-all-links
 ```
 
-### 2. Run the Script
+### 2. Run via Batch Launcher (Windows)
+Double-click `run.bat` or run:
+```cmd
+run.bat
+```
+
+Or run via Python directly:
 ```bash
-python fetch.py
+python main.py
 ```
 > **Note**: Missing dependencies (`requests`, `beautifulsoup4`, `pyfiglet`, `colorama`, `rich`) will be auto-detected and installed automatically on your first run!
 
