@@ -1,67 +1,84 @@
-# fetches-all-links
+# ⚡ Web Link Scraper
 
-![image](https://github.com/harindujayakody/fetches-all-links/assets/9878813/71f881e8-2f51-4e9a-9451-e4086a78562c)
+<p align="center">
+  <img src="https://img.shields.io/github/license/harindujayakody/fetches-all-links?style=for-the-badge&color=blue" alt="License" />
+  <img src="https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Version" />
+  <img src="https://img.shields.io/badge/UI-Oh%20My%20Posh%20Style-007ACC?style=for-the-badge&logo=powershell&logoColor=white" alt="UI" />
+  <img src="https://img.shields.io/github/repo-size/harindujayakody/fetches-all-links?style=for-the-badge&color=brightgreen" alt="Repo Size" />
+  <img src="https://img.shields.io/github/stars/harindujayakody/fetches-all-links?style=for-the-badge&color=yellow" alt="Stars" />
+</p>
 
-# Web Link Scraper
+A modern, high-performance Python script that scrapes all links from any webpage, groups them by domain, and formats output with domain-scoped numbering `(1)`, `(2)`, `(3)`. Features an **Oh My Posh** inspired terminal UI powered by `rich`, automatic dependency management, and anti-blocking header handling.
 
-Web Link Scraper is a Python script that allows you to fetch all links from a given webpage and save them to a text file, grouped by domain. The script also includes a Dracula theme for the terminal interface, a hero section with credits for the author, and options to retry or close the program.
+---
 
-## Prerequisites
+## 🌟 Key Features
 
-Before running the script, ensure you have the following installed:
+- 🌐 **Domain Grouping & Numbering**: Organizes extracted links by domain name with clean `(1)`, `(2)` numbering in both terminal tree views and output files.
+- 🎨 **Oh My Posh Terminal UI/UX**:
+  - Powerline status segment header (`⚡ LinkScraper` │ `👤 Harindu Jayakody` │ `🐍 Python 3`).
+  - Styled multi-line prompt (`╭─ 🌐 LinkScraper ╰─❯`).
+  - Live loading progress spinner.
+  - Execution summary cards with total link metrics and time elapsed.
+- ⚡ **Auto-Dependency Management**: Automatically checks and installs any missing Python packages on startup without crashing.
+- 🧹 **Terminal Auto-Cleaning**: Automatically clears terminal logs on launch and before each new scraping session.
+- 🛡️ **Robust HTTP Fetching**: Handles missing URL schemes (`example.com` ➔ `https://example.com`), includes browser `User-Agent` headers to prevent `403`/`503` blocking, and resolves relative URLs seamlessly.
 
-- Python
-- Required Python libraries (`requests`, `beautifulsoup4`, `pyfiglet`, `colorama`)
+---
 
-You can install the required libraries using pip:
+## 📋 Output Preview (`links.txt`)
 
-```bash
-pip install requests beautifulsoup4 pyfiglet colorama
+```text
+================================================================================
+🌐 LINK SCRAPER OUTPUT - TARGET: https://httpbin.org
+📊 TOTAL LINKS: 4 | UNIQUE DOMAINS: 3
+================================================================================
+
+🌐 DOMAIN: github.com (2 links)
+--------------------------------------------------------------------------------
+  (1) https://github.com/requests/httpbin
+  (2) https://github.com/rochacbruno/flasgger
+
+🌐 DOMAIN: httpbin.org (1 links)
+--------------------------------------------------------------------------------
+  (1) https://httpbin.org/forms/post
 ```
 
-## How to Use
+---
 
-1. Clone this repository:
+## 🚀 Quick Start
 
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/harindujayakody/fetches-all-links.git
+cd fetches-all-links
 ```
 
-2. Navigate to the repository directory:
-
-```bash
-cd your-repo
-```
-
-3. Run the Python script:
-
+### 2. Run the Script
 ```bash
 python fetch.py
 ```
+> **Note**: Missing dependencies (`requests`, `beautifulsoup4`, `pyfiglet`, `colorama`, `rich`) will be auto-detected and installed automatically on your first run!
 
-4. Follow the on-screen instructions to enter the URL of the webpage you want to scrape.
+---
 
-5. The script will save the links to a text file named `links.txt`, grouped by domain. You can find this file in the same directory where the script is located.
+## 📦 Manual Installation (Optional)
 
-6. You'll also see a Dracula-themed terminal interface with a hero section displaying credits for the author and a link to the GitHub repository.
+If you prefer to install dependencies manually via `requirements.txt`:
 
-7. After running the script, you can choose to retry or close the program.
+```bash
+pip install -r requirements.txt
+```
 
-## Customization
+---
 
-You can customize the script by modifying the following sections in the `web_link_scraper.py` file:
+## 👤 Author
 
-- **Author and GitHub Repo**: Update the author's name and GitHub repository URL in the hero section.
+Developed with ❤️ by **Harindu Jayakody**
+- **GitHub**: [@harindujayakody](https://github.com/harindujayakody)
 
-- **ASCII Art Heading**: Customize the ASCII art heading by changing the text and font in the `pyfiglet.figlet_format` function.
+---
 
-- **Dracula Theme**: If you prefer a different color theme, you can modify the terminal colors in the script.
+## 📄 License
 
-## Credits
-
-This script is created by [Harindu Jayakody](https://github.com/harindujayakody/fetches-all-links).
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+This project is licensed under the [MIT License](LICENSE).
