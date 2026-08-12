@@ -3,45 +3,55 @@
 <p align="center">
   <img src="https://img.shields.io/github/license/harindujayakody/fetches-all-links?style=for-the-badge&color=blue" alt="License" />
   <img src="https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Version" />
-  <img src="https://img.shields.io/badge/UI-Oh%20My%20Posh%20Style-007ACC?style=for-the-badge&logo=powershell&logoColor=white" alt="UI" />
+  <img src="https://img.shields.io/badge/UI-Dark%20Mode-007ACC?style=for-the-badge&logo=powershell&logoColor=white" alt="UI" />
   <img src="https://img.shields.io/github/repo-size/harindujayakody/fetches-all-links?style=for-the-badge&color=brightgreen" alt="Repo Size" />
   <img src="https://img.shields.io/github/stars/harindujayakody/fetches-all-links?style=for-the-badge&color=yellow" alt="Stars" />
 </p>
 
-A modern, high-performance Python script that scrapes all links from any webpage, groups them by domain, and formats output with domain-scoped numbering `(1)`, `(2)`, `(3)`. Features an **Oh My Posh** inspired terminal UI powered by `rich`, automatic dependency management, and anti-blocking header handling.
+A modern, high-performance Python script that scrapes all links from any webpage, groups them into dedicated site folders (`output/<domain>/`), creates clean separate `.txt` files per domain, and formats raw links without prefixes.
 
 ---
 
 ## 🌟 Key Features
 
-- 🌐 **Domain Grouping & Numbering**: Organizes extracted links by domain name with clean `(1)`, `(2)` numbering in both terminal tree views and output files.
-- 🎨 **Oh My Posh Terminal UI/UX**:
-  - Powerline status segment header (`⚡ LinkScraper` │ `👤 Harindu Jayakody` │ `🐍 Python 3`).
-  - Styled multi-line prompt (`╭─ 🌐 LinkScraper ╰─❯`).
-  - Live loading progress spinner.
-  - Execution summary cards with total link metrics and time elapsed.
+- 📁 **Folder Grouping per Site**: Creates a dedicated folder for each target URL scraped (e.g. `output/cocobee.lk/`).
+- 📄 **Domain Files & Combined Output**:
+  - `all_links.txt`: Combined file with all scraped links categorized by domain.
+  - `<domain>.txt`: Individual `.txt` files containing clean raw links for each domain (e.g. `facebook.com.txt`, `cocobee.lk.txt`).
+- 🔗 **Clean Link Formatting**: No `(1)`, `(2)` prefixes before links in output files.
+- 🎨 **Dark Modern Terminal UI**:
+  - Sleek dark theme layout using `rich`.
+  - Minimalist prompt (`› Enter URL to scrape`).
+  - Live progress spinner.
+  - Execution summary cards with time and link metrics.
 - ⚡ **Auto-Dependency Management**: Automatically checks and installs any missing Python packages on startup without crashing.
 - 🧹 **Terminal Auto-Cleaning**: Automatically clears terminal logs on launch and before each new scraping session.
-- 🛡️ **Robust HTTP Fetching**: Handles missing URL schemes (`example.com` ➔ `https://example.com`), includes browser `User-Agent` headers to prevent `403`/`503` blocking, and resolves relative URLs seamlessly.
 
 ---
 
-## 📋 Output Preview (`links.txt`)
+## 📋 Folder Output Structure Example
+
+When scraping `https://www.cocobee.lk/`:
 
 ```text
-================================================================================
-🌐 LINK SCRAPER OUTPUT - TARGET: https://httpbin.org
-📊 TOTAL LINKS: 4 | UNIQUE DOMAINS: 3
-================================================================================
+output/
+└── www.cocobee.lk/
+    ├── all_links.txt
+    ├── www.cocobee.lk.txt
+    ├── facebook.com.txt
+    ├── instagram.com.txt
+    ├── tiktok.com.txt
+    ├── youtube.com.txt
+    ├── pinterest.com.txt
+    └── infiax.com.txt
+```
 
-🌐 DOMAIN: github.com (2 links)
---------------------------------------------------------------------------------
-  (1) https://github.com/requests/httpbin
-  (2) https://github.com/rochacbruno/flasgger
-
-🌐 DOMAIN: httpbin.org (1 links)
---------------------------------------------------------------------------------
-  (1) https://httpbin.org/forms/post
+### Clean Raw Link File Example (`www.cocobee.lk.txt`)
+```text
+https://www.cocobee.lk/
+https://www.cocobee.lk/shop
+https://www.cocobee.lk/sale
+https://www.cocobee.lk/new-arrivals
 ```
 
 ---

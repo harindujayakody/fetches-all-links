@@ -4,7 +4,7 @@ import time
 import subprocess
 from urllib.parse import urlparse, urljoin
 
-# Reconfigure stdout/stderr to utf-8 on Windows for clean rendering of unicode characters
+# Reconfigure stdout/stderr to utf-8 on Windows for clean rendering
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -15,9 +15,9 @@ if sys.platform == "win32":
 # Clean terminal screen on script load
 os.system('cls' if os.name == 'nt' else 'clear')
 
-# Script output file location
+# Base output directory
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_FILE = os.path.join(SCRIPT_DIR, 'links.txt')
+OUTPUT_BASE_DIR = os.path.join(SCRIPT_DIR, 'output')
 
 # Required packages mapping
 REQUIRED_PACKAGES = {
@@ -64,10 +64,9 @@ from rich import box
 console = Console()
 
 def render_header():
-    """Renders a sleek, dark, modern terminal header without buggy powerline backgrounds."""
+    """Renders a sleek, dark, modern terminal header."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    # Figlet header in dark neon cyan
     try:
         figlet_text = pyfiglet.figlet_format("Link Scraper", font="slant")
         console.print(f"[bold bright_cyan]{figlet_text}[/bold bright_cyan]")
@@ -94,6 +93,10 @@ def render_header():
     )
     console.print(banner_panel)
     console.print()
+
+def sanitize_folder_name(name):
+    """Sanitizes domain string to make it a safe directory name."""
+    return "".join(c for c in name if c.isalnum() or c in ('-', '_', '.')).strip('.')
 
 def fetch_links_and_save(url):
     url = url.strip()
@@ -124,6 +127,11 @@ def fetch_links_and_save(url):
             soup = BeautifulSoup(response.text, 'html.parser')
             links = soup.find_all('a', href=True)
 
+            target_domain = urlparse(url).netloc or "scraped_site"
+            site_folder_name = sanitize_folder_name(target_domain)
+            target_output_dir = os.path.join(OUTPUT_BASE_DIR, site_folder_name)
+            os.makedirs(target_output_dir, exist_ok=True)
+
             link_groups = {}
             for link in links:
                 href = link['href'].strip()
@@ -136,28 +144,41 @@ def fetch_links_and_save(url):
 
                 if domain not in link_groups:
                     link_groups[domain] = []
-                link_groups[domain].append(full_url)
+                
+                # Deduplicate links preserving insertion order
+                if full_url not in link_groups[domain]:
+                    link_groups[domain].append(full_url)
 
             total_links = sum(len(domain_links) for domain_links in link_groups.values())
             elapsed_time = round(time.time() - start_time, 2)
 
-            # Save grouped links with (1), (2) numbering under each domain header to links.txt
-            with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
+            # 1. Save combined all_links.txt inside the website result folder (clean raw links without (1) numbers)
+            main_output_file = os.path.join(target_output_dir, 'all_links.txt')
+            with open(main_output_file, 'w', encoding='utf-8') as file:
                 file.write("================================================================================\n")
                 file.write(f"🌐 LINK SCRAPER OUTPUT - TARGET: {url}\n")
-                file.write(f"📊 TOTAL LINKS: {total_links} | UNIQUE DOMAINS: {len(link_groups)}\n")
+                file.write(f"📊 TOTAL UNIQUE LINKS: {total_links} | UNIQUE DOMAINS: {len(link_groups)}\n")
                 file.write("================================================================================\n\n")
 
                 for domain, domain_links in link_groups.items():
                     file.write(f"🌐 DOMAIN: {domain} ({len(domain_links)} links)\n")
                     file.write("-" * 80 + "\n")
-                    for index, l in enumerate(domain_links, start=1):
-                        file.write(f"  ({index}) {l}\n")
+                    for l in domain_links:
+                        file.write(f"{l}\n")
                     file.write("\n")
 
-            # Sleek modern tree output
+            # 2. Save individual domain .txt files inside the website result folder (clean raw links)
+            for domain, domain_links in link_groups.items():
+                domain_filename = sanitize_folder_name(domain) + ".txt"
+                domain_filepath = os.path.join(target_output_dir, domain_filename)
+                with open(domain_filepath, 'w', encoding='utf-8') as df:
+                    for l in domain_links:
+                        df.write(f"{l}\n")
+
+            # Sleek modern tree output (clean raw links without (1) prefixes)
             tree = Tree(
-                f"[bold bright_cyan]🌐 Target Webpage:[/] [bold underline white]{url}[/]",
+                f"[bold bright_cyan]🌐 Scraped Output for:[/] [bold underline white]{url}[/]\n"
+                f"[bold grey70]📁 Folder:[/] [bold green]{target_output_dir}[/]",
                 guide_style="grey35"
             )
             
@@ -165,10 +186,8 @@ def fetch_links_and_save(url):
                 domain_node = tree.add(
                     f"[bold yellow]📂 {domain}[/] [dim magenta]({len(domain_links)} links)[/]"
                 )
-                for index, l in enumerate(domain_links, start=1):
-                    domain_node.add(
-                        f"[bold bright_cyan]({index})[/bold bright_cyan] [grey85]{l}[/grey85]"
-                    )
+                for l in domain_links:
+                    domain_node.add(f"[grey85]{l}[/grey85]")
 
             console.print()
             console.print(tree)
@@ -180,10 +199,11 @@ def fetch_links_and_save(url):
             summary_table.add_column(style="white")
 
             summary_table.add_row("🎯 Target URL:", f"[bold white]{url}[/bold white]")
-            summary_table.add_row("📊 Total Links Extracted:", f"[bold spring_green3]{total_links}[/bold spring_green3]")
+            summary_table.add_row("📊 Total Unique Links:", f"[bold spring_green3]{total_links}[/bold spring_green3]")
             summary_table.add_row("🌐 Unique Domains:", f"[bold yellow]{len(link_groups)}[/bold yellow]")
             summary_table.add_row("⏱️ Execution Time:", f"[bold magenta]{elapsed_time}s[/bold magenta]")
-            summary_table.add_row("💾 Saved File:", f"[underline spring_green3]{OUTPUT_FILE}[/underline spring_green3]")
+            summary_table.add_row("📁 Result Folder:", f"[bold underline green]{target_output_dir}[/bold underline green]")
+            summary_table.add_row("💾 Combined File:", f"[underline cyan]{main_output_file}[/underline cyan]")
 
             console.print(
                 Panel(
@@ -227,12 +247,7 @@ def main():
     while True:
         render_header()
 
-        # Modern minimalist input prompt
         url_input = Prompt.ask("[bold bright_cyan]›[/bold bright_cyan] [bold white]Enter URL to scrape[/bold white]").strip()
-
-        # Clean previous file data
-        with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
-            file.write('')
 
         fetch_links_and_save(url_input)
 
