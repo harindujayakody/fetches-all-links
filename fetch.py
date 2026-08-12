@@ -4,7 +4,7 @@ import time
 import subprocess
 from urllib.parse import urlparse, urljoin
 
-# Reconfigure stdout/stderr to utf-8 on Windows to handle rich unicode & emojis cleanly
+# Reconfigure stdout/stderr to utf-8 on Windows for clean rendering of unicode characters
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -19,7 +19,7 @@ os.system('cls' if os.name == 'nt' else 'clear')
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.path.join(SCRIPT_DIR, 'links.txt')
 
-# Required packages mapping: module_name -> pip package_name
+# Required packages mapping
 REQUIRED_PACKAGES = {
     "requests": "requests",
     "bs4": "beautifulsoup4",
@@ -47,10 +47,8 @@ def check_and_install_dependencies():
             print(f"Error installing dependencies: {e}")
             sys.exit(1)
 
-# Perform dependency auto-check before importing third-party libraries
 check_and_install_dependencies()
 
-# Import third-party libraries after verification
 import requests
 from bs4 import BeautifulSoup
 import pyfiglet
@@ -60,31 +58,41 @@ from rich.table import Table
 from rich.tree import Tree
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.prompt import Prompt
+from rich.text import Text
+from rich import box
 
 console = Console()
 
-def render_oh_my_posh_header():
-    """Renders a modern Oh My Posh styled terminal header."""
+def render_header():
+    """Renders a sleek, dark, modern terminal header without buggy powerline backgrounds."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    # Figlet ASCII Banner
+    # Figlet header in dark neon cyan
     try:
         figlet_text = pyfiglet.figlet_format("Link Scraper", font="slant")
-        console.print(f"[bold magenta]{figlet_text}[/bold magenta]")
+        console.print(f"[bold bright_cyan]{figlet_text}[/bold bright_cyan]")
     except Exception:
-        console.print("[bold cyan]=== LINK SCRAPER ===[/bold cyan]\n")
+        pass
 
-    # Oh My Posh Styled Status Header Panel
-    posh_panel = Panel(
-        "[bold black on cyan] ⚡ LinkScraper Core [/bold black on cyan]  │  "
-        "[bold white on magenta] 👤 Harindu Jayakody [/bold white on magenta]  │  "
-        "[bold black on yellow] 🐍 Python 3 [/bold black on yellow]  │  "
-        "[bold white on green] 🩷 github.com/harindujayakody/fetches-all-links [/bold white on green]",
-        title="[bold bright_blue]── Oh My Posh Terminal UI ──[/bold bright_blue]",
-        border_style="bright_blue",
-        padding=(0, 1)
+    header_text = Text()
+    header_text.append("⚡ ", style="bold yellow")
+    header_text.append("LINK SCRAPER ", style="bold bright_white")
+    header_text.append("v2.0 ", style="bold bright_cyan")
+    header_text.append("│ ", style="grey39")
+    header_text.append("Web Link Crawler & Categorizer\n", style="grey70")
+    header_text.append("👤 Author: ", style="bold grey54")
+    header_text.append("Harindu Jayakody  ", style="bold magenta")
+    header_text.append("│ ", style="grey39")
+    header_text.append("🔗 Repo: ", style="bold grey54")
+    header_text.append("github.com/harindujayakody/fetches-all-links", style="underline cyan")
+
+    banner_panel = Panel(
+        header_text,
+        box=box.ROUNDED,
+        border_style="grey35",
+        padding=(0, 2)
     )
-    console.print(posh_panel)
+    console.print(banner_panel)
     console.print()
 
 def fetch_links_and_save(url):
@@ -105,8 +113,8 @@ def fetch_links_and_save(url):
 
     try:
         with Progress(
-            SpinnerColumn("dots", style="bold cyan"),
-            TextColumn("[bold cyan]Connecting to webpage & scraping links...[/bold cyan]"),
+            SpinnerColumn("dots", style="bold bright_cyan"),
+            TextColumn("[bold bright_cyan]Scraping webpage & analyzing links...[/bold bright_cyan]"),
             transient=True
         ) as progress:
             progress.add_task("scrape", total=None)
@@ -133,7 +141,7 @@ def fetch_links_and_save(url):
             total_links = sum(len(domain_links) for domain_links in link_groups.values())
             elapsed_time = round(time.time() - start_time, 2)
 
-            # Save grouped links with (1), (2) numbering under each domain header
+            # Save grouped links with (1), (2) numbering under each domain header to links.txt
             with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
                 file.write("================================================================================\n")
                 file.write(f"🌐 LINK SCRAPER OUTPUT - TARGET: {url}\n")
@@ -147,33 +155,42 @@ def fetch_links_and_save(url):
                         file.write(f"  ({index}) {l}\n")
                     file.write("\n")
 
-            # Display Oh My Posh styled output tree in Terminal with (1), (2)... domain link numbering
-            tree = Tree(f"[bold bright_green]🌐 Scraped Output for:[/] [bold underline cyan]{url}[/]")
+            # Sleek modern tree output
+            tree = Tree(
+                f"[bold bright_cyan]🌐 Target Webpage:[/] [bold underline white]{url}[/]",
+                guide_style="grey35"
+            )
             
             for domain, domain_links in link_groups.items():
-                domain_node = tree.add(f"[bold yellow]📂 {domain}[/] [bold magenta]({len(domain_links)} links)[/]")
+                domain_node = tree.add(
+                    f"[bold yellow]📂 {domain}[/] [dim magenta]({len(domain_links)} links)[/]"
+                )
                 for index, l in enumerate(domain_links, start=1):
-                    domain_node.add(f"[bold dim cyan]({index})[/bold dim cyan] [white]{l}[/white]")
+                    domain_node.add(
+                        f"[bold bright_cyan]({index})[/bold bright_cyan] [grey85]{l}[/grey85]"
+                    )
 
             console.print()
             console.print(tree)
             console.print()
 
-            # Oh My Posh Summary Card Panel
+            # Sleek Dark Summary Card
             summary_table = Table.grid(padding=(0, 2))
-            summary_table.add_column(style="bold cyan", justify="right")
-            summary_table.add_column(style="bold white")
-            summary_table.add_row("🔗 Target URL:", url)
-            summary_table.add_row("📊 Total Links Saved:", f"[bold green]{total_links}[/bold green]")
+            summary_table.add_column(style="bold bright_cyan", justify="right")
+            summary_table.add_column(style="white")
+
+            summary_table.add_row("🎯 Target URL:", f"[bold white]{url}[/bold white]")
+            summary_table.add_row("📊 Total Links Extracted:", f"[bold spring_green3]{total_links}[/bold spring_green3]")
             summary_table.add_row("🌐 Unique Domains:", f"[bold yellow]{len(link_groups)}[/bold yellow]")
             summary_table.add_row("⏱️ Execution Time:", f"[bold magenta]{elapsed_time}s[/bold magenta]")
-            summary_table.add_row("💾 Saved File Location:", f"[bold underline green]{OUTPUT_FILE}[/bold underline green]")
+            summary_table.add_row("💾 Saved File:", f"[underline spring_green3]{OUTPUT_FILE}[/underline spring_green3]")
 
             console.print(
                 Panel(
                     summary_table,
-                    title="[bold green]✔ SCRAPING COMPLETED SUCCESSFULLY[/bold green]",
-                    border_style="green",
+                    title="[bold spring_green3]✔ SCRAPE COMPLETE[/bold spring_green3]",
+                    box=box.ROUNDED,
+                    border_style="spring_green3",
                     padding=(1, 2)
                 )
             )
@@ -183,6 +200,7 @@ def fetch_links_and_save(url):
                 Panel(
                     f"[bold red]Failed to retrieve webpage. Status Code: {response.status_code}[/bold red]",
                     title="[bold red]✖ HTTP ERROR[/bold red]",
+                    box=box.ROUNDED,
                     border_style="red"
                 )
             )
@@ -190,7 +208,8 @@ def fetch_links_and_save(url):
         console.print(
             Panel(
                 f"[bold red]Network error occurred:\n{e}[/bold red]",
-                title="[bold red]✖ NETWORK FAILURE[/bold red]",
+                title="[bold red]✖ NETWORK ERROR[/bold red]",
+                box=box.ROUNDED,
                 border_style="red"
             )
         )
@@ -199,17 +218,17 @@ def fetch_links_and_save(url):
             Panel(
                 f"[bold red]An unexpected error occurred:\n{e}[/bold red]",
                 title="[bold red]✖ ERROR[/bold red]",
+                box=box.ROUNDED,
                 border_style="red"
             )
         )
 
 def main():
     while True:
-        render_oh_my_posh_header()
+        render_header()
 
-        # Oh My Posh Styled Segment Prompt
-        console.print("[bold bright_blue]╭─[/bold bright_blue] [bold black on cyan] 🌐 LinkScraper [/bold black on cyan] [bold yellow]Enter Webpage URL:[/bold yellow]")
-        url_input = Prompt.ask("[bold bright_blue]╰─❯[/bold bright_blue] ").strip()
+        # Modern minimalist input prompt
+        url_input = Prompt.ask("[bold bright_cyan]›[/bold bright_cyan] [bold white]Enter URL to scrape[/bold white]").strip()
 
         # Clean previous file data
         with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
@@ -218,15 +237,14 @@ def main():
         fetch_links_and_save(url_input)
 
         console.print()
-        console.print("[bold bright_blue]╭─[/bold bright_blue] [bold white on magenta] 🔄 Action Required [/bold white on magenta] [bold cyan]Retry or Close?[/bold cyan]")
         choice = Prompt.ask(
-            "[bold bright_blue]╰─❯[/bold bright_blue] [bold green](R)etry[/bold green] or [bold red](C)lose[/bold red]",
+            "[bold bright_cyan]›[/bold bright_cyan] [bold white]Retry (r) or Close (c)?[/bold white]",
             choices=["r", "c", "R", "C"],
             default="r"
         ).strip().lower()
 
         if choice == 'c':
-            console.print("\n[bold cyan]👋 Thank you for using Link Scraper! Goodbye.[/bold cyan]\n")
+            console.print("\n[bold dim cyan]👋 Goodbye![/bold dim cyan]\n")
             break
 
 if __name__ == "__main__":
