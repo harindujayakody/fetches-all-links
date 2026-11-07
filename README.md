@@ -102,6 +102,15 @@ python -m pip install -r requirements.txt
 
 ---
 
+## 🤖 Crawler behaviour
+
+- **Scope:** one page per URL. Enter one URL (or several, separated by spaces/commas) and the tool fetches that page and extracts all of its links. It does not crawl the discovered links.
+- **robots.txt:** respected — a URL disallowed by the site's `robots.txt` is skipped with a notice.
+- **User-Agent:** the tool identifies itself honestly as `fetches-all-links/2.0` instead of impersonating a browser.
+- **Dependencies:** pinned in `requirements.txt`; install them into a virtual environment first — the script never installs packages itself.
+
+---
+
 ## 👤 Author
 
 Developed with ❤️ by **Harindu Jayakody**

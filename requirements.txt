@@ -1,5 +1,8 @@
-requests
-beautifulsoup4
-pyfiglet
-colorama
-rich
+# Pinned so installs are reproducible. Install into a virtual environment:
+#   python -m venv .venv && .venv\Scripts\activate (Windows) / source .venv/bin/activate (macOS/Linux)
+#   python -m pip install -r requirements.txt
+requests==2.32.3
+beautifulsoup4==4.12.3
+pyfiglet==1.0.4
+colorama==0.4.6
+rich==13.9.4
