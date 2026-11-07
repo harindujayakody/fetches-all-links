@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-import subprocess
+
 from urllib.parse import urlparse, urljoin
 
 # Reconfigure stdout/stderr to utf-8 on Windows for clean rendering
@@ -28,26 +28,20 @@ REQUIRED_PACKAGES = {
     "rich": "rich"
 }
 
-def check_and_install_dependencies():
-    """Auto-check missing modules when script starts and install them via pip."""
+def check_dependencies():
+    """Report missing dependencies without modifying the Python environment."""
     missing = []
     for module_name, package_name in REQUIRED_PACKAGES.items():
         try:
             __import__(module_name)
         except ImportError:
             missing.append(package_name)
-            
     if missing:
-        print(f"Missing required module(s): {', '.join(missing)}")
-        print("Installing missing modules automatically via pip...\n")
-        try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", *missing])
-            print("\nDependencies installed successfully!\n")
-        except Exception as e:
-            print(f"Error installing dependencies: {e}")
-            sys.exit(1)
+        print(f"Missing required packages: {', '.join(missing)}")
+        print("Activate your virtual environment and run: python -m pip install -r requirements.txt")
+        sys.exit(1)
 
-check_and_install_dependencies()
+check_dependencies()
 
 import requests
 from bs4 import BeautifulSoup

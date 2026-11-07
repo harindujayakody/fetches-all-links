@@ -17,19 +17,23 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-:: Auto check and install missing modules from requirements.txt
-echo [INFO] Checking Python dependencies...
-python -m pip install -r requirements.txt --quiet --no-warn-script-location
+:: Dependencies must be installed explicitly before launch.
 
 echo.
 echo [INFO] Starting Web Link Scraper...
 echo.
 
-:: Launch main script
-python main.py
+:: Prefer the project virtual environment when available.
+if exist ".venv\Scripts\python.exe" (
+    ".venv\Scripts\python.exe" main.py
+) else (
+    python main.py
+)
 
 if %errorlevel% neq 0 (
     echo.
     echo [ERROR] Application exited with error code %errorlevel%.
     pause
 )
+
+
