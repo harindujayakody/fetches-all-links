@@ -3,6 +3,7 @@ import sys
 import time
 
 from urllib.parse import urlparse, urljoin
+from urllib.robotparser import RobotFileParser
 
 # Reconfigure stdout/stderr to utf-8 on Windows for clean rendering
 if sys.platform == "win32":
@@ -92,6 +93,22 @@ def sanitize_folder_name(name):
     """Sanitizes domain string to make it a safe directory name."""
     return "".join(c for c in name if c.isalnum() or c in ('-', '_', '.')).strip('.')
 
+def allowed_by_robots(url, user_agent):
+    """True unless the site's robots.txt disallows fetching `url`."""
+    parsed = urlparse(url)
+    robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
+    rp = RobotFileParser()
+    rp.set_url(robots_url)
+    try:
+        rp.read()
+    except Exception:
+        return True  # robots.txt unreachable: fail open
+    try:
+        return rp.can_fetch(user_agent, url)
+    except Exception:
+        return True
+
+
 def fetch_links_and_save(url):
     url = url.strip()
     if not url:
@@ -102,9 +119,26 @@ def fetch_links_and_save(url):
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
 
+    # Identify the tool honestly instead of spoofing a Chrome browser.
+    # Some sites serve different (or no) content to scrapers; identifying
+    # ourselves keeps the tool's behaviour transparent.
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        'User-Agent': 'fetches-all-links/2.0 (+https://github.com/harindujayakody/fetches-all-links)'
     }
+
+    # Respect robots.txt: skip the URL if the site disallows this crawler.
+    # A robots.txt that cannot be fetched (404/network error) is treated as
+    # "no restrictions", per the standard's fail-open convention.
+    if not allowed_by_robots(url, headers['User-Agent']):
+        console.print(
+            Panel(
+                f"[bold yellow]Skipped:[/bold yellow] {url} is disallowed by the site's robots.txt.",
+                title="[bold yellow]⚠ ROBOTS.TXT[/bold yellow]",
+                box=box.ROUNDED,
+                border_style="yellow",
+            )
+        )
+        return
 
     start_time = time.time()
 
@@ -241,9 +275,15 @@ def main():
     while True:
         render_header()
 
-        url_input = Prompt.ask("[bold bright_cyan]›[/bold bright_cyan] [bold white]Enter URL to scrape[/bold white]").strip()
+        url_input = Prompt.ask("[bold bright_cyan]›[/bold bright_cyan] [bold white]Enter URL(s) to scrape (separate multiple URLs with a space or comma)[/bold white]").strip()
 
-        fetch_links_and_save(url_input)
+        # One page per URL: each URL is fetched and all links on that page
+        # are extracted. Separate several URLs with spaces and/or commas.
+        urls = [u for u in url_input.replace(",", " ").split() if u]
+        if not urls:
+            console.print("[bold red]❌ Error: No URL provided.[/bold red]")
+        for url in urls:
+            fetch_links_and_save(url)
 
         console.print()
         choice = Prompt.ask(
