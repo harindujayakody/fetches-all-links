@@ -31,7 +31,7 @@ A modern, high-performance Python script that scrapes all links from any webpage
   - `all_links.txt`: Combined file with all scraped links categorized by domain.
   - `<domain>.txt`: Individual `.txt` files containing clean raw links for each domain (e.g. `facebook.com.txt`, `cocobee.lk.txt`).
 - 🔗 **Clean Link Formatting**: No `(1)`, `(2)` prefixes before links in output files.
-- ⚡ **Auto-Start & Dependency Launcher (`run.bat`)**: Single-click batch launcher that checks Python & missing dependencies automatically.
+- ⚡ **Launcher (`run.bat`)**: Starts the script after you install its dependencies.
 - 🎨 **Dark Modern Terminal UI**:
   - Sleek dark theme layout using `rich`.
   - Minimalist prompt (`› Enter URL to scrape`).
@@ -86,16 +86,18 @@ Or run via Python directly:
 ```bash
 python main.py
 ```
-> **Note**: Missing dependencies (`requests`, `beautifulsoup4`, `pyfiglet`, `colorama`, `rich`) will be auto-detected and installed automatically on your first run!
+> **Setup:** Install dependencies in a virtual environment before launching, as shown below. The launcher never installs packages automatically.
 
 ---
 
-## 📦 Manual Installation (Optional)
+## 📦 Dependency installation
 
-If you prefer to install dependencies manually via `requirements.txt`:
+Create and activate a virtual environment, then install dependencies explicitly via `requirements.txt`. On Windows:
 
 ```bash
-pip install -r requirements.txt
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
 ```
 
 ---
@@ -110,3 +112,4 @@ Developed with ❤️ by **Harindu Jayakody**
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
+
